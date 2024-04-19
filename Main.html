@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      
+      background-image: url(https://images.unsplash.com/photo-1597839219216-a773cb2473e4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+    }
+
+    #stopwatch {
+      font-size: 3em;
+      margin: 20px 0;
+      color: white; /* Dark gray text */
+    }
+
+    #buttons {
+      margin: 20px 0;
+    }
+
+    button {
+      font-size: 1.2em;
+      padding: 10px 20px;
+      margin: 0 10px;
+      cursor: pointer;
+      background-color: #f0f0f0; 
+      color: #333; 
+      border: 2px solid #333; 
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    button:hover {
+      background-color: green; /* Dark gray background */
+      color: white; /* White text */
+    }
+
+    #lapTimes {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #lapTimes li {
+      font-size: 1.2em;
+      margin: 5px 0;
+      color: white; /* Dark gray text */
+
+    }
+    #resetButton{
+        font-size: 1.2em;
+      padding: 10px 20px;
+      margin: 0 10px;
+      cursor: pointer;
+      background-color: #f0f0f0; /* Light gray background */
+      color: #333; /* Dark gray text */
+      border: 2px solid #333; /* Dark gray border */
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+
+    }
+    #resetButton:hover{
+        background-color: red; /* Dark gray background */
+      color: white; /* White text */
+    }
+  </style>
+</head>
+<body>
+  <div id="stopwatch">00:00:00</div>
+  <div id="buttons">
+    <button id="startStopButton">Start</button>
+    <button id="lapButton">Lap</button>
+    <button id="resetButton">Reset</button>
+  </div>
+
+  <ul id="lapTimes"></ul>
+
+  <script>
+    let startTime;
+    let intervalId;
+    let running = false;
+    
+    const stopwatchDisplay = document.getElementById('stopwatch');
+    const startStopButton = document.getElementById('startStopButton');
+    const lapButton = document.getElementById('lapButton');
+    const resetButton = document.getElementById('resetButton');
+    const lapTimesList = document.getElementById('lapTimes');
+    
+    function startStop() {
+      if (running) {
+        clearInterval(intervalId);
+        running = false;
+        startStopButton.textContent = 'Start';
+      } else {
+        startTime = Date.now() - (parseInt(stopwatchDisplay.textContent.replace(/:/g, '')) * 1000 || 0);
+        intervalId = setInterval(updateStopwatch, 10);
+        running = true;
+        startStopButton.textContent = 'Stop';
+      }
+    }
+    
+    function updateStopwatch() {
+      const elapsedTime = Date.now() - startTime;
+      const formattedTime = formatTime(elapsedTime);
+      stopwatchDisplay.textContent = formattedTime;
+    }
+    
+    function formatTime(milliseconds) {
+      const hours = Math.floor(milliseconds / 3600000);
+      milliseconds %= 3600000;
+      const minutes = Math.floor(milliseconds / 60000);
+      milliseconds %= 60000;
+      const seconds = Math.floor(milliseconds / 1000);
+      milliseconds = Math.floor((milliseconds % 1000) / 10);
+    
+      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${pad(milliseconds)}`;
+    }
+    
+    function pad(num) {
+      return num.toString().padStart(2, '0');
+    }
+    
+    function lap() {
+      const lapTime = stopwatchDisplay.textContent;
+      const lapItem = document.createElement('li');
+      lapItem.textContent = lapTime;
+      lapTimesList.appendChild(lapItem);
+    }
+    
+    function reset() {
+      clearInterval(intervalId);
+      running = false;
+      stopwatchDisplay.textContent = '00:00:00';
+      startStopButton.textContent = 'Start';
+      lapTimesList.innerHTML = '';
+    }
+    
+    startStopButton.addEventListener('click', startStop);
+    lapButton.addEventListener('click', lap);
+    resetButton.addEventListener('click', reset);
+    </script>
+</body>
+</html>
